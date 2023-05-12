@@ -185,7 +185,9 @@ for fileName in os.scandir('pdfs'):
                     pivot = data1.index("-")
                     date_range = data1[pivot-1] + "-" + data1[pivot+1]
                     data1 = data1[:pivot-1]
-                address = " ".join(data1) + ", " +  data2[:-1]
+                # find if anything is at the end of data2
+                end2 = re.split("\([0-9][0-9][0-9]\)", data2)[0].split()
+                address = " ".join(data1) +  " ".join(end2)
                 information["PropertyAddress"][address] = date_range
             # end of address extraction
             if ("Voter Registration" in contents[addressCounter]):
@@ -195,17 +197,110 @@ for fileName in os.scandir('pdfs'):
         # extracts property information (WIP)
         propertyCounter = 0
         while propertyCounter < len(contents):
-            if ("Real Property" in contents[addressCounter]):
+            if ("Real Property" in contents[propertyCounter]):
                 break
             propertyCounter += 1
         while propertyCounter < len(contents):
             if ("Assessment Record" in contents[propertyCounter]):
-                assessment = {"Address": None, "County" : None, "RecordingDate" : None, "SaleDate" : None, "SalePrice" : None, "AssessedValue" : None, "MarketLandValue" : None, "MarketImprovementValue" : None, "TotalMarketValue" : None}
-                assessmentCounter = propertyCounter
+                assessmentKey = ""
+                assessment = {"ARAddress": None, "ARCounty" : None, "ARRecordingDate" : None, "ARSaleDate" : None, "ARSalePrice" : None, "ARAssessedValue" : None, "ARMarketLandValue" : None, "ARMarketImprovementValue" : None, "ARTotalMarketValue" : None}
+                assessmentCounter = propertyCounter + 1
+                while (assessmentCounter < len(contents)):
+                    # get county and address
+                    if ("Address: " in contents[assessmentCounter]):
+                        address = contents[assessmentCounter].split()
+                        if (len(address) != 1):
+                            assessment["ARAddress"] = " ".join(address[1:])
+                    if ("County/FIPS:" in contents[assessmentCounter]):
+                        county = contents[assessmentCounter].split()
+                        assessment["ARCounty"] = " ".join(county[1:])
+
+                    # get recording date
+                    if ("Recording Date:" in contents[assessmentCounter]):
+                        recordingdate = contents[assessmentCounter].split()
+                        assessment["ARRecordingDate"] = recordingdate[-1]
+
+                    # get sale date and price
+                    if ("Sale Date:" in contents[assessmentCounter]):
+                        saledate = contents[assessmentCounter].split()
+                        assessment["ARSaleDate"] = saledate[-1]
+                    if ("Sale Price:" in contents[assessmentCounter]):
+                        saleprice = contents[assessmentCounter].split()
+                        assessment["ARSalePrice"] = saleprice[-1]
+
+                    # get values
+                    if ("Assessed Value:" in contents[assessmentCounter]):
+                        assessedvalue = contents[assessmentCounter].split()
+                        assessment["ARAssessedValue"] = assessedvalue[-1]
+                    if ("Market Land Value:" in contents[assessmentCounter]):
+                        landvalue = contents[assessmentCounter].split()
+                        assessment["ARMarketLandValue"] = landvalue[-1]
+                    if ("Market Improvement Value:" in contents[assessmentCounter]):
+                        improvvalue = contents[assessmentCounter].split()
+                        assessment["ARMarketImprovementValue"] = improvvalue[-1]
+                    if ("Total Market Value:" in contents[assessmentCounter]):
+                        totalvalue = contents[assessmentCounter].split()
+                        assessment["ARTotalMarketValue"] = totalvalue[-1]
+                    # break
+                    if ("Assessment Record" in contents[assessmentCounter] or "Deed Record" in contents[assessmentCounter]):
+                        # print(assessment)
+                        # to do: add to original info
+                        break
+                    assessmentCounter += 1
 
 
             if ("Deed Record" in contents[propertyCounter]):
-                deed = {"LenderName" : None, "ContractDate" : None, "RecordingDate" : None, "LoanAmount" : None, "LoanType" : None, "TitleCompany" : None, "TransactionType" : None, "Description" : None}
+                deedKey = ""
+                deed = {"DRAddress": None, "DRLenderName" : None, "DRContractDate" : None, "DRRecordingDate" : None, "DRLoanAmount" : None, "DRLoanType" : None, "DRTitleCompany" : None, "DRTransactionType" : None, "DRDescription" : None}
+                deedCounter = propertyCounter + 1
+                while (deedCounter < len(contents)):
+                    # get address for key
+                    if ("ddress:" in contents[deedCounter]):
+                        deedKey = " ".join(contents[deedCounter].split()[1:])
+                        deed["DRAddress"] = deedKey
+
+                    # get lender name
+                    if ("Lender Information" in contents[deedCounter]):
+                        lendername = contents[deedCounter+1].split()
+                        deed["DRLenderName"] = " ".join(lendername[1:])
+
+                    # get dates
+                    if ("Contract Date:" in contents[deedCounter]):
+                        contractdate = contents[deedCounter].split()
+                        deed["DRContractDate"] = contractdate[-1]
+                    if ("Recording Date:" in contents[deedCounter]):
+                        recordingdate = contents[deedCounter].split()
+                        deed["DRRecordingDate"] = recordingdate[-1]
+
+                    # get loan information
+                    if ("Loan Amount:" in contents[deedCounter]):
+                        loanamount = contents[deedCounter].split()
+                        deed["DRLoanAmount"] = loanamount[-1]
+                    if ("Loan Type:" in contents[deedCounter]):
+                        loantype = contents[deedCounter].split()
+                        deed["DRLoanType"] = " ".join(loantype[2:])
+
+                    # other information
+                    if ("Title Company:" in contents[deedCounter]):
+                        titlecompany = contents[deedCounter].split()
+                        deed["DRTitleCompany"] = " ".join(titlecompany[2:])
+
+                    if ("Transaction Type:" in contents[deedCounter]):
+                        transactiontype = contents[deedCounter].split()
+                        deed["DRTransactionType"] = " ".join(transactiontype[2:])
+
+                    if ("Description:" in contents[deedCounter]):
+                        description = contents[deedCounter].split()
+                        deed["DRDescription"] = " ".join(description[1:])
+
+
+                    # break
+                    if ("Assessment Record" in contents[deedCounter] or "Deed Record" in contents[
+                        deedCounter]):
+                        print(deed)
+                        # to do: add to original info
+                        break
+                    deedCounter += 1
 
 
 
@@ -215,7 +310,7 @@ for fileName in os.scandir('pdfs'):
             propertyCounter += 1
 
 
-        print(information)
+        # print(information)
 # In[30]:
 
 
