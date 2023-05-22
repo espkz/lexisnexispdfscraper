@@ -46,7 +46,7 @@ for fileName in os.scandir('pdfs'):
         finally:
             f.close()
 
-        new_name = fileName.name
+        new_name = fileName.name[:-4]
 
         with open('txts/' + new_name + '.txt', 'w') as f:
             f.write(str(pdfTextLayout, 'UTF-8'))
@@ -177,23 +177,26 @@ for fileName in os.scandir('pdfs'):
         while addressCounter < len(contents):
             if ("Dates" in contents[addressCounter]):
                 data1 = contents[addressCounter+1].split()
+                if ("Page" in data1):
+                    data1 = contents[addressCounter+4].split()
                 data2 = contents[addressCounter+2]
+                if ("Page" in data2.split()):
+                    data2 = contents[addressCounter+5]
                 date_range = ""
-                # print(data1)
-                # print(data2)
+                print(data1)
+                print(data2)
                 if ("-" in data1):
                     pivot = data1.index("-")
                     date_range = data1[pivot-1] + "-" + data1[pivot+1]
                     data1 = data1[:pivot-1]
                 # find if anything is at the end of data2
                 end2 = re.split("\([0-9][0-9][0-9]\)", data2)[0].split()
-                address = " ".join(data1) +  " ".join(end2)
+                address = " ".join(data1) + " " +  " ".join(end2)
                 information["PropertyAddress"][address] = date_range
             # end of address extraction
             if ("Voter Registration" in contents[addressCounter]):
                 break
             addressCounter += 1
-
         # extracts property information (WIP)
         propertyCounter = 0
         while propertyCounter < len(contents):
@@ -297,7 +300,7 @@ for fileName in os.scandir('pdfs'):
                     # break
                     if ("Assessment Record" in contents[deedCounter] or "Deed Record" in contents[
                         deedCounter]):
-                        print(deed)
+                        # print(deed)
                         # to do: add to original info
                         break
                     deedCounter += 1
@@ -310,7 +313,7 @@ for fileName in os.scandir('pdfs'):
             propertyCounter += 1
 
 
-        # print(information)
+        print(information)
 # In[30]:
 
 
