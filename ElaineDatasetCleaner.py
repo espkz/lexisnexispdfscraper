@@ -8,7 +8,7 @@ import os
 import sys
 import pandas as pd
 
-df1 = pd.read_excel(r"C:\Users\evany_cdhq038\OneDrive\Desktop\1_21_2023_Lexus\Moody's LinkedIn Analysts Sets 1+2.xlsx", sheet_name='Moodys LinkedIn Analysts 1')
+df1 = pd.read_excel("Credit Analysts Auditing/Moody's/Moody's LinkedIn Analysts Sets 1+2 - Missed.xlsx")
 #df2 = pd.read_excel(r"C:\Users\evany_cdhq038\OneDrive\Desktop\1_21_2023_Lexus\Moody's LinkedIn Analysts Sets 1+2.xlsx", sheet_name='Moodys LinkedIn Analysts 2')
 
 

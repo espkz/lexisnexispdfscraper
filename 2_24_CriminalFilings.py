@@ -7,11 +7,11 @@
 import os,sys,subprocess
 import tempfile
 from fuzzywuzzy import fuzz
-PDFTOTEXT_PATH="C:\\Users\\evany_cdhq038\\OneDrive\\Desktop\\Economics_Research\\xpdf-tools-win-4.03\\bin64\\pdftotext.exe"
-#PDFTOTEXT_PATH="C:\\Users\\evany_cdhq038\\OneDrive\\Desktop\\1_21_2023_Lexus\\pdftotext.exe"
+
+PDFTOTEXT_PATH= '/usr/local/bin/pdftotext'
 
 results=[]
-for fileName in os.scandir():
+for fileName in os.scandir('pdfs'):
         if fileName.is_file() and fileName.name.endswith(".pdf"):
             addThis={}
             addThis["PDFName"]=fileName.name
@@ -20,7 +20,7 @@ for fileName in os.scandir():
             pdfPath=fileName.path
             #getting -layout version and storing as pdfTextLayout
             try:
-                q = subprocess.Popen([PDFTOTEXT_PATH,'-layout',pdfPath,"-"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
+                q = subprocess.Popen([PDFTOTEXT_PATH, '-f', '2', '-layout', pdfPath, "-"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 pdfTextLayout, err = q.communicate()
             except:
                 print('pdftotext Layout failed')
