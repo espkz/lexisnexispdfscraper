@@ -9,19 +9,32 @@ import tempfile
 from fuzzywuzzy import fuzz
 import pdftotext
 import re
+import csv
+
+# initialize a csv file
+
+csv_file_name = "test" + ".csv"
+
+csv_columns = ["PDFName", "FullName", "FirstName", "LastName", "County", "PhoneNumber", "SSN", "DOBMonth", "DOBYear",
+               "Gender", "LexID", "Email1", "Email2", "Email3", "Email4", "Email5", "Email6", "CurrentAddress",
+               "PropertyAddress", "DateRange"]
+
+with open(csv_file_name, 'w') as f:
+    writer = csv.writer(f)
+
+    # write the header
+    writer.writerow(csv_columns)
+
+f.close()
 
 # to user- modify this to the path of your pdftotext.exe
 PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
-
-results = []
-completeARList = []
-completeDRList = []
 for fileName in os.scandir('pdfs'):
     if fileName.is_file() and fileName.name.endswith(".pdf"):
         information = {"PDFName": None, "FullName": None, "FirstName": None, "LastName": None, "County": None,
                        "PhoneNumber": None, "SSN": None, "DOBMonth": None, "DOBYear": None, "Gender": None,
                        "LexID": None, "Email1": None, "Email2": None, "Email3": None, "Email4": None, "Email5": None,
-                       "Email6": None, "CurrentAddress": None, "PropertyAddress": {}}
+                       "Email6": None, "CurrentAddress": None, "PropertyAddress": {}, "ARRecords" : [], "DRRecords" : []}
         information["PDFName"] = fileName.name
         print(fileName.name)
 
@@ -183,8 +196,8 @@ for fileName in os.scandir('pdfs'):
                 if ("Page" in data2.split()):
                     data2 = contents[addressCounter+5]
                 date_range = ""
-                print(data1)
-                print(data2)
+                # print(data1)
+                # print(data2)
                 if ("-" in data1):
                     pivot = data1.index("-")
                     date_range = data1[pivot-1] + "-" + data1[pivot+1]
@@ -197,6 +210,7 @@ for fileName in os.scandir('pdfs'):
             if ("Voter Registration" in contents[addressCounter]):
                 break
             addressCounter += 1
+
         # extracts property information (WIP)
         propertyCounter = 0
         while propertyCounter < len(contents):
@@ -247,7 +261,7 @@ for fileName in os.scandir('pdfs'):
                     # break
                     if ("Assessment Record" in contents[assessmentCounter] or "Deed Record" in contents[assessmentCounter]):
                         # print(assessment)
-                        # to do: add to original info
+                        information["ARRecords"].append(assessment)
                         break
                     assessmentCounter += 1
 
@@ -301,7 +315,7 @@ for fileName in os.scandir('pdfs'):
                     if ("Assessment Record" in contents[deedCounter] or "Deed Record" in contents[
                         deedCounter]):
                         # print(deed)
-                        # to do: add to original info
+                        information["DRRecords"].append(deed)
                         break
                     deedCounter += 1
 
@@ -313,19 +327,40 @@ for fileName in os.scandir('pdfs'):
             propertyCounter += 1
 
 
-        print(information)
+        # print(information)
+
+        # input personal data based on dates
+        addresses = information["PropertyAddress"].keys()
+
+        info_data = []
+        for i in information.values():
+            if type(i) == dict:
+                break
+            info_data.append(i)
+
+        with open(csv_file_name, 'a') as f:
+            writer = csv.writer(f)
+            # write the header
+            for address in addresses:
+                writer.writerow(info_data + [address] + [information["PropertyAddress"][address]])
+        f.close()
+
+
+        # with open(csv_file_name, 'w') as f:
+        #     writer = csv.writer(f)
+        #
+        #     # write the header
+        #     writer.writerow(csv_columns)
+        #
+        # f.close()
+
 # In[30]:
 
 
 # In[31]:
 
 
-# exporting to csv
-import csv
 
-csv_columns = ["PDFName", "FullName", "FirstName", "LastName", "County", "PhoneNumber", "SSN", "DOBMonth", "DOBYear",
-               "Gender", "LexID", "Email1", "Email2", "Email3", "Email4", "Email5", "Email6", "CurrentAddress",
-               "PropertyAddress", "DateRange"]
 AR_columns = ["ARAddress", "ARCounty", "ARRecordingDate", "ARSaleDate", "ARSalePrice", "ARAssessedValue",
               "ARMarketLandValue", "ARMarketImprovementValue", "ARTotalMarketValue"]
 DR_columns = ["DRAddress", "DRContractDate", "DRRecordingDate", "DRLoanAmount", "DRLoanType", "DRTitleCompany",
@@ -334,31 +369,31 @@ all_columns = csv_columns + AR_columns + DR_columns
 
 masterList = []
 
-for addyDict in results:
-    mergeThis = {}
-    for ARDict in completeARList:
-        tempRatio = fuzz.ratio(ARDict["ARAddress"].lower().strip(), addyDict["PropertyAddress"].lower().strip())
-        if tempRatio > 90:
-            addyDict = {**addyDict, **ARDict}
+# for addyDict in results:
+#     mergeThis = {}
+#     for ARDict in completeARList:
+#         tempRatio = fuzz.ratio(ARDict["ARAddress"].lower().strip(), addyDict["PropertyAddress"].lower().strip())
+#         if tempRatio > 90:
+#             addyDict = {**addyDict, **ARDict}
+#
+#     for DRDict in completeDRList:
+#         holdingRatio = fuzz.ratio(DRDict["DRAddress"].lower().strip(), addyDict["PropertyAddress"].lower().strip())
+#         if holdingRatio > 90:
+#             addyDict = {**addyDict, **DRDict}
+#
+#     masterList.append(addyDict)
 
-    for DRDict in completeDRList:
-        holdingRatio = fuzz.ratio(DRDict["DRAddress"].lower().strip(), addyDict["PropertyAddress"].lower().strip())
-        if holdingRatio > 90:
-            addyDict = {**addyDict, **DRDict}
-
-    masterList.append(addyDict)
-
-csv_file = "2_13_Moody.csv"
-masterList = sorted(masterList, key=lambda x: x['FirstName'])
-
-try:
-    with open(csv_file, 'w', newline="") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=all_columns)
-        writer.writeheader()
-        for data in masterList:
-            writer.writerow(data)
-except IOError:
-    print("IOError")
+# csv_file = "2_13_Moody.csv"
+# masterList = sorted(masterList, key=lambda x: x['FirstName'])
+#
+# try:
+#     with open(csv_file, 'w', newline="") as csvfile:
+#         writer = csv.DictWriter(csvfile, fieldnames=all_columns)
+#         writer.writeheader()
+#         for data in masterList:
+#             writer.writerow(data)
+# except IOError:
+#     print("IOError")
 
 # In[ ]:
 
