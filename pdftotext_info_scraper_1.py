@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# overall notes:
-# DR Lender Information? Lender Name?
-# separate csv files v. putting it in one file
-
+# overall notes by Ellie:
 
 import os, sys, subprocess
 import tempfile
@@ -25,7 +22,7 @@ dr_file_name = "testDR" + ".csv"
 ar_file_name = "testAR" + ".csv"
 
 AR_columns = ["Name", "Address", "ARAddress", "ARCounty", "ARRecordingDate", "ARSaleDate", "ARSalePrice", "ARAssessedValue", "ARMarketLandValue", "ARMarketImprovementValue", "ARTotalMarketValue"]
-DR_columns = ["Name", "Address", "DRAddress", "DRContractDate", "DRRecordingDate", "DRLoanAmount", "DRLoanType", "DRTitleCompany", "DRTransactionType", "DRDescription", "DRLenderInformation"]
+DR_columns = ["Name", "Address", "DRAddress", "DRContractDate", "DRRecordingDate", "DRLoanAmount", "DRLoanType", "DRTitleCompany", "DRTransactionType", "DRDescription", "DRLenderName"]
 
 with open(csv_file_name, 'w') as f:
     writer = csv.writer(f)
@@ -365,7 +362,6 @@ for fileName in os.scandir('pdfs'):
 
         with open(csv_file_name, 'a') as f:
             writer = csv.writer(f)
-            # write the header
             for address in addresses:
                 writer.writerow(info_data + [address] + [information["PropertyAddress"][address]])
         f.close()
@@ -378,7 +374,6 @@ for fileName in os.scandir('pdfs'):
                 ARdata.append(value)
             with open(ar_file_name, 'a') as f:
                 writer = csv.writer(f)
-                # write the header
                 writer.writerow([information["FullName"]] + [address["ARAddress"]] + ARdata)
             f.close()
 
@@ -390,7 +385,6 @@ for fileName in os.scandir('pdfs'):
                 DRdata.append(value)
             with open(dr_file_name, 'a') as f:
                 writer = csv.writer(f)
-                # write the header
                 writer.writerow([information["FullName"]] + [address["DRAddress"]] + DRdata)
             f.close()
 
