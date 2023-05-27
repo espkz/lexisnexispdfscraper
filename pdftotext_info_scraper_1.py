@@ -3,28 +3,29 @@
 
 # overall notes by Ellie:
 
-import os, sys, subprocess
+import os,subprocess
 import tempfile
-import pdftotext
 import re
 import csv
 
 # initialize a csv file for personal information
 
-csv_file_name = "test" + ".csv"
+folder = 'Moodys'
+
+address_file_name = folder + "Address.csv"
 
 csv_columns = ["PDFName", "FullName", "FirstName", "LastName", "County", "PhoneNumber", "SSN", "DOBMonth", "DOBYear","Gender", "LexID", "Email1", "Email2", "Email3", "Email4", "Email5", "Email6", "CurrentAddress",
 "PropertyAddress", "DateRange"]
 
 # initialize AR and DR tables (separate CSV files?)
 
-dr_file_name = "testDR" + ".csv"
-ar_file_name = "testAR" + ".csv"
+dr_file_name = folder + "DR.csv"
+ar_file_name = folder + "AR.csv"
 
 AR_columns = ["PDFName", "Name", "Address", "ARAddress", "ARCounty", "ARRecordingDate", "ARSaleDate", "ARSalePrice", "ARAssessedValue", "ARMarketLandValue", "ARMarketImprovementValue", "ARTotalMarketValue"]
 DR_columns = ["PDFName", "Name", "Address", "DRAddress", "DRContractDate", "DRRecordingDate", "DRLoanAmount", "DRLoanType", "DRTitleCompany", "DRTransactionType", "DRDescription", "DRLenderName"]
 
-with open(csv_file_name, 'w') as f:
+with open(address_file_name, 'w') as f:
     writer = csv.writer(f)
 
     # write the header
@@ -52,7 +53,7 @@ f.close()
 # begin conversation
 
 PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
-for fileName in os.scandir('pdfs'):
+for fileName in os.scandir('Credit Analysts Auditing/Moody\'s/Moody\'s LinkedIn Analysts 2'):
     if fileName.is_file() and fileName.name.endswith(".pdf"):
         information = {"PDFName": None, "FullName": None, "FirstName": None, "LastName": None, "County": None,
                        "PhoneNumber": None, "SSN": None, "DOBMonth": None, "DOBYear": None, "Gender": None,
@@ -82,11 +83,12 @@ for fileName in os.scandir('pdfs'):
         finally:
             f.close()
 
-        new_name = fileName.name[:-4]
-
-        with open('txts/' + new_name + '.txt', 'w') as f:
-            f.write(str(pdfTextLayout, 'UTF-8'))
-        f.close()
+        # for manually checking texts and extraction
+        # new_name = fileName.name[:-4]
+        #
+        # with open('txts/' + new_name + '.txt', 'w') as f:
+        #     f.write(str(pdfTextLayout, 'UTF-8'))
+        # f.close()
 
 
         # decoding both from bytes to string- might need some modifications bc of latin1 decoding
@@ -99,7 +101,7 @@ for fileName in os.scandir('pdfs'):
 
         # Extracts gender and name and lexid and also dob
         counter = 0
-        gender = "Male"
+        gender = ""
         names = []
         dates = []
 
@@ -111,6 +113,8 @@ for fileName in os.scandir('pdfs'):
                 dates.append(contents[counter + 1].split())
             if ("Female" in contents[counter]):
                 gender = "Female"
+            if ("Male" in contents[counter]):
+                gender = "Male"
             if ("Full Name" in contents[counter]):
                 names.append(contents[counter + 1].split())
             counter = counter + 1
@@ -121,9 +125,9 @@ for fileName in os.scandir('pdfs'):
             information["FullName"] = information["FirstName"] + " " + names[0][2] + " " + information["LastName"]
         else:
             information["FullName"] = information["FirstName"] + " " + information["LastName"]
-
-        information["DOBMonth"] = dates[0][1].split("/")[0]
-        information["DOBYear"] = dates[0][1].split("/")[1]
+        if ("/" in list(dates[0][1])):
+            information["DOBMonth"] = dates[0][1].split("/")[0]
+            information["DOBYear"] = dates[0][1].split("/")[1]
 
         information["Gender"] = gender
 
@@ -360,7 +364,7 @@ for fileName in os.scandir('pdfs'):
                 break
             info_data.append(i)
 
-        with open(csv_file_name, 'a') as f:
+        with open(address_file_name, 'a') as f:
             writer = csv.writer(f)
             for address in addresses:
                 writer.writerow(info_data + [address] + [information["PropertyAddress"][address]])
