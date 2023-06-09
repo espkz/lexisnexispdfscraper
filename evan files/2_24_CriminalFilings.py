@@ -11,7 +11,7 @@ from fuzzywuzzy import fuzz
 PDFTOTEXT_PATH= '/usr/local/bin/pdftotext'
 
 results=[]
-for fileName in os.scandir('pdfs'):
+for fileName in os.scandir('../pdfs'):
         if fileName.is_file() and fileName.name.endswith(".pdf"):
             addThis={}
             addThis["PDFName"]=fileName.name
@@ -100,7 +100,7 @@ for fileName in os.scandir('pdfs'):
 
 
 import csv
-csv_file="2_28_MoodysCriminalReports.csv"
+csv_file= "../2_28_MoodysCriminalReports.csv"
 #masterList=sorted(results,key=lambda x: x['PDFName'])
 all_columns=["PDFName","CaseFilingDate","OffenseDate","Categories","CaseType","CourtOffense","CourtDisposition"]
     

@@ -24,7 +24,7 @@ def organize_name(disorganized_name):
 
 
 PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
-files = [f for f in os.listdir('pdfs') if not f.startswith('.')]
+files = [f for f in os.listdir('../pdfs') if not f.startswith('.')]
 for file in files:
     information = {"PDFName": file,
                    "FullName": None, "FirstName": None, "LastName": None,

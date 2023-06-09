@@ -22,7 +22,7 @@ def organize_name(disorganized_name):
     return (first, last, middle)
 
 if __name__ == "__main__":
-    files = [f for f in os.listdir('pdfs') if not f.startswith('.')]
+    files = [f for f in os.listdir('../pdfs') if not f.startswith('.')]
     for file in files:
         information = {"PDFName": file,
                        "FullName": None, "FirstName": None, "LastName": None,
