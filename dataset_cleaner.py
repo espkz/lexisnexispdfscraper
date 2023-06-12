@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# What's supposed to be in the columns? additonal information, or just name, corresponding pdf, and score?
 
 
 import os
@@ -10,7 +10,7 @@ import pandas as pd
 from fuzzywuzzy import fuzz
 import openpyxl
 
-df1 = pd.read_excel("Merged Analyst Documents - Lexis Nexis + LinkedIn/Moodys Lexis Nexis-LinkedIn Analysts - Sets 1+2 - Kushagra, Anna, Ellie Merged.xlsx")
+df1 = pd.read_excel("Merged Analyst Documents - Lexis Nexis + LinkedIn/SP Lexis Nexis-LinkedIn Analysts - Sets 1+2 - Div,Peter,Ellie Merged.xlsx")
 
 oneDF = df1[df1['lexismatch'] == 1.0]
 zeroDF = df1[df1['lexismatch'] != 1.0]
@@ -27,7 +27,7 @@ correspondingPDFs = []
 correspondingMatchRatio = []
 pdfMatch = []
 
-root = "Merged Analyst Documents - Lexis Nexis + LinkedIn/Moodys Analyst PDFs"
+root = "Merged Analyst Documents - Lexis Nexis + LinkedIn/SP Analyst PDFs"
 for entry in os.scandir(root):
     purePDFNames.append(entry.name)
     # cleanedPDFNames.append(entry.name[:-4].replace("_", " "))
@@ -82,21 +82,18 @@ oneDF["correspondingPDF"] = correspondingPDFs
 oneDF["correspondingMatchRatio"] = correspondingMatchRatio
 
 oneDF = oneDF.sort_values(by='correspondingMatchRatio', ascending=False)
-columnHeaders = ['mdanid', 'lexismatch', 'analyst', 'correspondingPDF', 'correspondingMatchRatio', 'linkedin_url',
-                 'linkedin_title', 'title', 'office', 'gender', 'mis_years', 'first_job_start_year', 'grad_instit',
-                 'grad_degree', 'grad_year', 'ug_instit', 'ug_year', 'comments', 'Division', 'Country', 'namelen',
-                 'linkedin_name', 'title', 'moody_start', 'moody_end']
+columnHeaders = ['analyst', 'correspondingPDF', 'correspondingMatchRatio']
 oneDF = oneDF[columnHeaders]
 
 # In[5]:
 
 # exporting data to excel
 
-oneDF.to_excel("2_15_EvanMoody1.xlsx")
+oneDF.to_excel("SPNameMatch.xlsx")
 
 # In[6]:
 
 
-zeroDF.to_excel("2_15_EvanMoody0.xlsx")
+# zeroDF.to_excel("2_15_EvanMoody0.xlsx")
 
 # In[ ]:

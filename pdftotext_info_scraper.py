@@ -50,10 +50,10 @@ with open(ar_file_name, 'w') as f:
 f.close()
 
 
-# begin conversation
+# begin conversion
 
 PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
-for fileName in os.scandir('Credit Analysts Auditing/Moody\'s/Moody\'s LinkedIn Analysts 2'):
+for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Moodys Analyst PDFs'):
     if fileName.is_file() and fileName.name.endswith(".pdf"):
         information = {"PDFName": None, "FullName": None, "FirstName": None, "LastName": None, "County": None,
                        "PhoneNumber": None, "SSN": None, "DOBMonth": None, "DOBYear": None, "Gender": None,
