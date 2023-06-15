@@ -12,7 +12,7 @@ import csv
 
 # initialize CSV file
 
-csv_file = "SP" + "CriminalReports.csv"
+csv_file = "Moodys" + "CriminalReports.csv"
 criminal_columns = ["PDFName", "CaseFilingDate", "OffenseDate", "Categories", "CaseType", "CourtOffense", "CourtDisposition"]
 
 with open(csv_file, 'w') as f:
@@ -22,7 +22,7 @@ f.close()
 
 # begin conversion
 PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
-for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/SP Analyst PDFs'):
+for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Moodys Analyst PDFs'):
     if fileName.is_file() and fileName.name.endswith(".pdf"):
         information = {"PDFName": None, "CriminalRecords" : []}
         information["PDFName"] = fileName.name

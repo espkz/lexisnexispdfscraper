@@ -10,7 +10,7 @@ import pandas as pd
 from fuzzywuzzy import fuzz
 import openpyxl
 
-df1 = pd.read_excel("Merged Analyst Documents - Lexis Nexis + LinkedIn/Moodys Lexis Nexis-LinkedIn Analysts - Sets 1+2 - Kushagra, Anna, Ellie Merged.xlsx")
+df1 = pd.read_excel("Merged Analyst Documents - Lexis Nexis + LinkedIn/SP Lexis Nexis-LinkedIn Analysts - Sets 1+2 - Div,Peter,Ellie Merged.xlsx")
 
 oneDF = df1[df1['lexisfmatch'] == 1.0]
 zeroDF = df1[df1['lexisfmatch'] != 1.0]
@@ -27,7 +27,7 @@ correspondingPDFs = []
 correspondingMatchRatio = []
 pdfMatch = []
 
-root = "Merged Analyst Documents - Lexis Nexis + LinkedIn/Moodys Analyst PDFs"
+root = "Merged Analyst Documents - Lexis Nexis + LinkedIn/SP Analyst PDFs"
 for entry in os.scandir(root):
     purePDFNames.append(entry.name)
     # cleanedPDFNames.append(entry.name[:-4].replace("_", " "))
@@ -89,7 +89,7 @@ oneDF = oneDF[columnHeaders]
 
 # exporting data to excel
 
-oneDF.to_csv("MoodysNameMatch.csv")
+oneDF.to_csv("SPNameMatch.csv")
 
 # In[6]:
 

@@ -10,7 +10,7 @@ import csv
 
 # initialize a csv file for personal information
 
-folder = 'SP'
+folder = 'Moodys'
 
 address_file_name = folder + "Information.csv"
 
@@ -53,7 +53,7 @@ f.close()
 # begin conversion
 
 PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
-for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/SP Analyst PDFs'):
+for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Moodys Analyst PDFs'):
     if fileName.is_file() and fileName.name.endswith(".pdf"):
         information = {"PDFName": None, "FullName": None, "FirstName": None, "LastName": None, "County": None,
                        "PhoneNumber": None, "SSN": None, "DOBMonth": None, "DOBYear": None, "Gender": None,
@@ -190,6 +190,7 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/SP
             print("No COUNTY for " + fileName.name)
         # extracts phone number
         phoneCounter = 0
+        phoneNum = ""
         while phoneCounter < len(contents):
             if ("Phone" in contents[phoneCounter]):
                 if ("County" in contents[phoneCounter] and "Address" in contents[

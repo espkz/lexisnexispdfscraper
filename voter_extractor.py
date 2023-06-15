@@ -7,7 +7,7 @@ import tempfile
 import re
 import csv
 
-csv_file = "SP" + "VoterRegitstration.csv"
+csv_file = "Moodys" + "VoterRegitstration.csv"
 voting_columns = ["PDFName", "RegistrationDate", "PartyAffiliation", "ActiveStatus", "LastVoteDate"]
 
 with open(csv_file, 'w') as f:
@@ -19,7 +19,7 @@ f.close()
 
 # begin conversion
 PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
-for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/SP Analyst PDFs'):
+for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Moodys Analyst PDFs'):
     if fileName.is_file() and fileName.name.endswith(".pdf"):
         information = {"PDFName": None, "VotingRecords" : []}
         information["PDFName"] = fileName.name
