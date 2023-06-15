@@ -10,9 +10,9 @@ import csv
 
 # initialize a csv file for personal information
 
-folder = 'Moodys'
+folder = 'SP'
 
-address_file_name = folder + "Address.csv"
+address_file_name = folder + "Information.csv"
 
 csv_columns = ["PDFName", "FullName", "FirstName", "LastName", "County", "PhoneNumber", "SSN", "DOBMonth", "DOBYear","Gender", "LexID", "Email1", "Email2", "Email3", "Email4", "Email5", "Email6", "CurrentAddress",
 "PropertyAddress", "DateRange"]
@@ -53,7 +53,7 @@ f.close()
 # begin conversion
 
 PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
-for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Moodys Analyst PDFs'):
+for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/SP Analyst PDFs'):
     if fileName.is_file() and fileName.name.endswith(".pdf"):
         information = {"PDFName": None, "FullName": None, "FirstName": None, "LastName": None, "County": None,
                        "PhoneNumber": None, "SSN": None, "DOBMonth": None, "DOBYear": None, "Gender": None,
@@ -93,7 +93,6 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
 
         # decoding both from bytes to string- might need some modifications bc of latin1 decoding
         contents = []
-        tableFile = []
         for line in encodedlineArray:
             contents.append(line.decode("Latin1"))
 
@@ -104,6 +103,7 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
         gender = ""
         names = []
         dates = []
+        ssn = []
 
         while counter < len(contents):
             lexid = re.findall("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]", contents[counter])
@@ -117,36 +117,27 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
                 gender = "Male"
             if ("Full Name" in contents[counter]):
                 names.append(contents[counter + 1].split())
+            if ("XXXX" in contents[counter]):
+                ssn.append(contents[counter].split())
             counter = counter + 1
-
-        information["LastName"] = names[0][0][:-1]
-        information["FirstName"] = names[0][1]
-        if names[0][2].isalpha() and names[0][2].lower() != "po":
-            information["FullName"] = information["FirstName"] + " " + names[0][2] + " " + information["LastName"]
-        else:
-            information["FullName"] = information["FirstName"] + " " + information["LastName"]
-        if ("/" in list(dates[0][1])):
+        if len(names) != 0:
+            if len(names[0]) != 0:
+                information["LastName"] = names[0][0][:-1]
+                information["FirstName"] = names[0][1]
+                if names[0][2].isalpha() and names[0][2].lower() != "po":
+                    information["FullName"] = information["FirstName"] + " " + names[0][2] + " " + information["LastName"]
+                else:
+                    information["FullName"] = information["FirstName"] + " " + information["LastName"]
+        if (len(dates)!= 0) and ("/" in list(dates[0][1])):
             information["DOBMonth"] = dates[0][1].split("/")[0]
             information["DOBYear"] = dates[0][1].split("/")[1]
+        if len(ssn) != 0:
+            if ssn[0][0] != "SSN:":
+                information["SSN"] = ssn[0][0]
+            else:
+                information["SSN"] = ssn[0][1]
 
         information["Gender"] = gender
-
-        # extracts SSN
-        SSNCounter = 0
-        RegistrantLine = 0
-        VoterLine = 0
-        while SSNCounter < len(contents):
-            if ("Registrant Information" in contents[SSNCounter]):
-                RegistrantLine = SSNCounter
-            if ("Voter Information" in contents[SSNCounter]):
-                VoterLine = SSNCounter
-            SSNCounter += 1
-        newLoop = RegistrantLine
-        while (newLoop <= VoterLine):
-            if ("SSN" in contents[newLoop]):
-                SSN = contents[newLoop][contents[newLoop].find(":") + 1:]
-                information["SSN"] = SSN.strip()
-            newLoop += 1
 
         # extracts emails
         emailMax = 6

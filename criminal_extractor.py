@@ -12,20 +12,17 @@ import csv
 
 # initialize CSV file
 
-csv_file = "test_criminal_reports.csv"
+csv_file = "SP" + "CriminalReports.csv"
 criminal_columns = ["PDFName", "CaseFilingDate", "OffenseDate", "Categories", "CaseType", "CourtOffense", "CourtDisposition"]
 
 with open(csv_file, 'w') as f:
     writer = csv.writer(f)
-
     writer.writerow(criminal_columns)
-
-
 f.close()
 
 # begin conversion
 PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
-for fileName in os.scandir('pdfs'):
+for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/SP Analyst PDFs'):
     if fileName.is_file() and fileName.name.endswith(".pdf"):
         information = {"PDFName": None, "CriminalRecords" : []}
         information["PDFName"] = fileName.name
@@ -58,7 +55,6 @@ for fileName in os.scandir('pdfs'):
         # with open('txts/' + new_name + '.txt', 'w') as f:
         #     f.write(str(pdfTextLayout, 'UTF-8'))
         # f.close()
-
 
         # decoding both from bytes to string- might need some modifications bc of latin1 decoding
         contents = []
@@ -96,7 +92,7 @@ for fileName in os.scandir('pdfs'):
 
             lineCounter += 1
 
-        print(information)
+        # print(information)
         # input criminal info based on name
         criminalrecords = information["CriminalRecords"]
         for record in criminalrecords:

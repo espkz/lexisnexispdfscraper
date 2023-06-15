@@ -7,7 +7,7 @@ import tempfile
 import re
 import csv
 
-csv_file = "test_voter_registration.csv"
+csv_file = "SP" + "VoterRegitstration.csv"
 voting_columns = ["PDFName", "RegistrationDate", "PartyAffiliation", "ActiveStatus", "LastVoteDate"]
 
 with open(csv_file, 'w') as f:
@@ -19,7 +19,7 @@ f.close()
 
 # begin conversion
 PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
-for fileName in os.scandir('pdfs'):
+for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/SP Analyst PDFs'):
     if fileName.is_file() and fileName.name.endswith(".pdf"):
         information = {"PDFName": None, "VotingRecords" : []}
         information["PDFName"] = fileName.name
@@ -47,11 +47,11 @@ for fileName in os.scandir('pdfs'):
             f.close()
 
         # for manually checking texts and extraction
-        new_name = fileName.name[:-4]
-
-        with open('txts/' + new_name + '.txt', 'w') as f:
-            f.write(str(pdfTextLayout, 'UTF-8'))
-        f.close()
+        # new_name = fileName.name[:-4]
+        #
+        # with open('txts/' + new_name + '.txt', 'w') as f:
+        #     f.write(str(pdfTextLayout, 'UTF-8'))
+        # f.close()
 
 
         # decoding both from bytes to string- might need some modifications bc of latin1 decoding
@@ -86,7 +86,7 @@ for fileName in os.scandir('pdfs'):
                 information["VotingRecords"].append(reportInfo)
 
             lineCounter += 1
-        print(information)
+        # print(information)
         # input voting info based on name
         votingrecords = information["VotingRecords"]
         for record in votingrecords:
