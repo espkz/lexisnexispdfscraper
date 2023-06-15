@@ -53,16 +53,15 @@ for fileName in os.scandir('pdfs'):
             f.close()
 
         # for manually checking texts and extraction
-        new_name = fileName.name[:-4]
-
-        with open('txts/' + new_name + '.txt', 'w') as f:
-            f.write(str(pdfTextLayout, 'UTF-8'))
-        f.close()
+        # new_name = fileName.name[:-4]
+        #
+        # with open('txts/' + new_name + '.txt', 'w') as f:
+        #     f.write(str(pdfTextLayout, 'UTF-8'))
+        # f.close()
 
 
         # decoding both from bytes to string- might need some modifications bc of latin1 decoding
         contents = []
-        tableFile = []
         for line in encodedlineArray:
             contents.append(line.decode("Latin1"))
 
@@ -98,7 +97,7 @@ for fileName in os.scandir('pdfs'):
             lineCounter += 1
 
         print(information)
-        # input DR info based on name and address
+        # input criminal info based on name
         criminalrecords = information["CriminalRecords"]
         for record in criminalrecords:
             data = []
