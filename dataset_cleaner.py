@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
 
-# What's supposed to be in the columns? additonal information, or just name, corresponding pdf, and score?
 
 
 import os
@@ -87,7 +84,7 @@ oneDF = oneDF[columnHeaders]
 
 # In[5]:
 
-# exporting data to excel
+# exporting data to csv
 
 oneDF.to_csv("SPNameMatch.csv")
 
@@ -95,5 +92,3 @@ oneDF.to_csv("SPNameMatch.csv")
 
 
 # zeroDF.to_excel("2_15_EvanMoody0.xlsx")
-
-# In[ ]:

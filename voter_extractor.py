@@ -18,7 +18,7 @@ with open(csv_file, 'w') as f:
 f.close()
 
 # begin conversion
-PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
+PDFTOTEXT_PATH = '/usr/local/bin/pdftotext' # path to pdftotext on my machine
 for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Moodys Analyst PDFs'):
     if fileName.is_file() and fileName.name.endswith(".pdf"):
         information = {"PDFName": None, "VotingRecords" : []}
@@ -26,7 +26,6 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
         print(fileName.name)
 
         pdfPath = fileName.path
-        # getting -layout version and storing as pdfTextLayout
         try:
             q = subprocess.Popen([PDFTOTEXT_PATH, '-f', '2', '-layout', pdfPath, "-"], stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
@@ -61,7 +60,6 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
             contents.append(line.decode("Latin1"))
 
         # voter registration extraction below
-        # 3/26/23 Note- you need to add if-statements below to extract the other information Professor Lock wants you to do
         lineCounter = 0
         while lineCounter < len(contents):
             if ":" in contents[lineCounter] and "Voter Registration" in contents[lineCounter]:
@@ -87,7 +85,8 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
 
             lineCounter += 1
         # print(information)
-        # input voting info based on name
+
+        # input voting info based on name and record
         votingrecords = information["VotingRecords"]
         for record in votingrecords:
             data = []
@@ -97,9 +96,5 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
                 writer = csv.writer(f)
                 writer.writerow([information["PDFName"]] + data)
             f.close()
-
-# In[ ]:
-
-
 
 

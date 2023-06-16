@@ -21,7 +21,7 @@ with open(csv_file, 'w') as f:
 f.close()
 
 # begin conversion
-PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
+PDFTOTEXT_PATH = '/usr/local/bin/pdftotext' # path to pdftotext on my machine
 for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Moodys Analyst PDFs'):
     if fileName.is_file() and fileName.name.endswith(".pdf"):
         information = {"PDFName": None, "CriminalRecords" : []}
@@ -29,7 +29,6 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
         print(fileName.name)
 
         pdfPath = fileName.path
-        # getting -layout version and storing as pdfTextLayout
         try:
             q = subprocess.Popen([PDFTOTEXT_PATH, '-f', '2', '-layout', pdfPath, "-"], stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
@@ -93,7 +92,8 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
             lineCounter += 1
 
         # print(information)
-        # input criminal info based on name
+
+        # input criminal info based on name and records
         criminalrecords = information["CriminalRecords"]
         for record in criminalrecords:
             data = []

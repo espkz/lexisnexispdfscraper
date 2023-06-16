@@ -17,7 +17,7 @@ address_file_name = folder + "Information.csv"
 csv_columns = ["PDFName", "FullName", "FirstName", "LastName", "County", "PhoneNumber", "SSN", "DOBMonth", "DOBYear","Gender", "LexID", "Email1", "Email2", "Email3", "Email4", "Email5", "Email6", "CurrentAddress",
 "PropertyAddress", "DateRange"]
 
-# initialize AR and DR tables (separate CSV files?)
+# initialize AR and DR tables
 
 dr_file_name = folder + "DR.csv"
 ar_file_name = folder + "AR.csv"
@@ -27,32 +27,26 @@ DR_columns = ["PDFName", "Name", "Address", "DRAddress", "DRContractDate", "DRRe
 
 with open(address_file_name, 'w') as f:
     writer = csv.writer(f)
-
-    # write the header
+    # write the columns
     writer.writerow(csv_columns)
-
 f.close()
 
 with open(dr_file_name, 'w') as f:
     writer = csv.writer(f)
-
-    # write the header
+    # write the columns
     writer.writerow(DR_columns)
-
 f.close()
 
 with open(ar_file_name, 'w') as f:
     writer = csv.writer(f)
-
-    # write the header
+    # write the columns
     writer.writerow(AR_columns)
-
 f.close()
 
 
 # begin conversion
 
-PDFTOTEXT_PATH = '/usr/local/bin/pdftotext'
+PDFTOTEXT_PATH = '/usr/local/bin/pdftotext' # path to pdftotext on my machine
 for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Moodys Analyst PDFs'):
     if fileName.is_file() and fileName.name.endswith(".pdf"):
         information = {"PDFName": None, "FullName": None, "FirstName": None, "LastName": None, "County": None,
@@ -63,7 +57,6 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
         print(fileName.name)
 
         pdfPath = fileName.path
-        # getting -layout version and storing as pdfTextLayout
         try:
             q = subprocess.Popen([PDFTOTEXT_PATH, '-f', '2', '-layout', pdfPath, "-"], stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
@@ -98,7 +91,8 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
 
         # extraction process below
 
-        # Extracts gender and name and lexid and also dob
+        # Extracts gender, name, lexid, dob, ssn
+
         counter = 0
         gender = ""
         names = []
@@ -236,6 +230,9 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
             if ("Real Property" in contents[propertyCounter]):
                 break
             propertyCounter += 1
+
+
+        # assessment record extraction
         while propertyCounter < len(contents):
             if ("Assessment Record" in contents[propertyCounter]):
                 assessment = {"ARAddress": None, "ARCounty" : None, "ARRecordingDate" : None, "ARSaleDate" : None, "ARSalePrice" : None, "ARAssessedValue" : None, "ARMarketLandValue" : None, "ARMarketImprovementValue" : None, "ARTotalMarketValue" : None}
@@ -283,7 +280,7 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
                         break
                     assessmentCounter += 1
 
-
+            # deed record extraction
             if ("Deed Record" in contents[propertyCounter]):
                 deed = {"DRAddress": None, "DRContractDate" : None, "DRRecordingDate" : None, "DRLoanAmount" : None, "DRLoanType" : None,  "DRTitleCompany" : None, "DRTransactionType" : None, "DRDescription" : None, "DRLenderName" : None,}
 
@@ -336,8 +333,6 @@ for fileName in os.scandir('Merged Analyst Documents - Lexis Nexis + LinkedIn/Mo
                         information["DRRecords"].append(deed)
                         break
                     deedCounter += 1
-
-
 
             # end of property extraction
             if ("Boats" in contents[propertyCounter]):
